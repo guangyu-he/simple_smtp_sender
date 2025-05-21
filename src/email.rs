@@ -1,4 +1,3 @@
-use std::fmt;
 use std::fs;
 use std::path::PathBuf;
 
@@ -8,42 +7,11 @@ use lettre::message::header::ContentType;
 use lettre::message::{Attachment, Mailbox, MessageBuilder, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
-use pyo3::{pyclass, pymethods};
+use pyo3::PyErr;
 
-#[derive(Clone)]
-#[pyclass(dict, get_all, set_all, str, subclass)]
-pub struct EmailConfig {
-    pub server: String,
-    pub sender_email: String,
-    pub username: String,
-    pub password: String,
-}
+use crate::email_config::EmailConfig;
 
-#[pymethods]
-impl EmailConfig {
-    #[new]
-    #[pyo3(signature = (server, sender_email, username, password))]
-    pub fn new(server: &str, sender_email: &str, username: &str, password: &str) -> Self {
-        EmailConfig {
-            server: server.to_string(),
-            sender_email: sender_email.to_string(),
-            username: username.to_string(),
-            password: password.to_string(),
-        }
-    }
-}
-
-impl fmt::Display for EmailConfig {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "EmailConfig<server={}, sender_email={}, username={}, password={}>",
-            self.server, self.sender_email, self.username, self.password
-        )
-    }
-}
-
-fn arg_check(config: &EmailConfig, recipient: &Vec<String>) -> Result<()> {
+fn arg_check(config: &EmailConfig, recipient: &Vec<String>) -> Result<bool> {
     let server = config.server.as_str();
 
     if server == "smtp.example.com" || server == "" {

@@ -1,6 +1,7 @@
 mod email;
+mod email_config;
 
-use email::EmailConfig;
+use email_config::EmailConfig;
 use pyo3::prelude::*;
 
 #[pyfunction]

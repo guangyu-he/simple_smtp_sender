@@ -7,11 +7,11 @@ use pyo3::prelude::*;
 #[pyo3(signature = (config, recipient, subject, body, cc = None, bcc = None, attachment = None))]
 fn send_email(
     config: EmailConfig,
-    recipient: &str,
+    recipient: Vec<String>,
     subject: &str,
     body: &str,
-    cc: Option<&str>,
-    bcc: Option<&str>,
+    cc: Option<Vec<String>>,
+    bcc: Option<Vec<String>>,
     attachment: Option<&str>,
 ) -> PyResult<()> {
     match email::send_email(config, recipient, subject, body, cc, bcc, attachment) {

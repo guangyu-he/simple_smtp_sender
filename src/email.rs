@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use anyhow::{anyhow, Result};
 
 use lettre::message::header::ContentType;
-use lettre::message::{Attachment, Mailbox, MultiPart, SinglePart};
+use lettre::message::{Attachment, Mailbox, MessageBuilder, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 use pyo3::{pyclass, pymethods};
@@ -43,64 +43,106 @@ impl fmt::Display for EmailConfig {
     }
 }
 
-pub fn send_email(
-    config: EmailConfig,
-    recipient: &str,
-    subject: &str,
-    body: &str,
-    cc: Option<&str>,
-    bcc: Option<&str>,
-    attachment: Option<&str>,
-) -> Result<()> {
+fn arg_check(config: &EmailConfig, recipient: &Vec<String>) -> Result<()> {
     let server = config.server.as_str();
+
     if server == "smtp.example.com" || server == "" {
         return Err(anyhow!("Config not set"));
     }
-    let from_email_str = config.from_email.as_str();
-    let from_email = from_email_str.parse::<Mailbox>()?;
-    let creds = Credentials::new(config.username, config.password);
-    let to_email = recipient.parse::<Mailbox>()?;
-
-    let mut email_builder = Message::builder()
-        .from(from_email)
-        .to(to_email)
-        .subject(subject);
-
-    let cc_str = cc.unwrap_or("");
-    if !cc_str.is_empty() {
-        let cc_email = cc_str.parse::<Mailbox>()?;
-        email_builder = email_builder.cc(cc_email);
+    if recipient.is_empty() {
+        return Err(anyhow!("No recipient"));
     }
 
-    let bcc_str = bcc.unwrap_or("");
-    if !bcc_str.is_empty() {
-        let bcc_email = bcc_str.parse::<Mailbox>()?;
-        email_builder = email_builder.bcc(bcc_email);
+    Ok(())
+}
+
+fn msg_builder(
+    from: &str,
+    recipient: Vec<String>,
+    subject: &str,
+    body: &str,
+    cc: Option<Vec<String>>,
+    bcc: Option<Vec<String>>,
+    attachment: Option<&str>,
+) -> Result<Message> {
+    let from_email = from.parse::<Mailbox>()?;
+    let mut email_builder = Message::builder().from(from_email).subject(subject);
+
+    for each_recipient in recipient {
+        let recipient_email = each_recipient.parse::<Mailbox>()?;
+        email_builder = email_builder.to(recipient_email);
+    }
+
+    match cc {
+        Some(cc) => {
+            for each_cc in cc {
+                let cc_email = each_cc.parse::<Mailbox>()?;
+                email_builder = email_builder.cc(cc_email);
+            }
+        }
+        None => {}
+    };
+
+    match bcc {
+        Some(bcc) => {
+            for each_bcc in bcc {
+                let bcc_email = each_bcc.parse::<Mailbox>()?;
+                email_builder = email_builder.bcc(bcc_email);
+            }
+        }
+        None => {}
     }
 
     let mut multipart_builder = MultiPart::mixed()
         .multipart(MultiPart::alternative().singlepart(SinglePart::html(String::from(body))));
 
-    let attachment_str = attachment.unwrap_or("");
-    if !attachment_str.is_empty() {
-        let attachment_path = PathBuf::from(attachment.unwrap_or(""));
-        let attachment_name = attachment_path
-            .file_name()
-            .unwrap()
-            .to_string_lossy()
-            .into_owned();
-        let attachment_body = fs::read(attachment_path)?;
-        let attachment_content_type = mime_guess::from_path(&attachment_name).first_or_text_plain();
-        let content_type = ContentType::parse(&attachment_content_type.to_string())?;
-        let attachment_part = Attachment::new(attachment_name).body(attachment_body, content_type);
-        multipart_builder = multipart_builder.singlepart(attachment_part);
+    match attachment {
+        Some(attachment) => {
+            let attachment_path = PathBuf::from(attachment);
+            if !attachment_path.exists() {
+                return Err(anyhow!("Attachment not found"));
+            }
+            if attachment_path.is_dir() {
+                return Err(anyhow!("Attachment is a directory"));
+            }
+            let attachment_body = fs::read(&attachment_path)?;
+            let attachment_content_type =
+                mime_guess::from_path(&attachment_path).first_or_text_plain();
+            let content_type = ContentType::parse(&attachment_content_type.to_string())?;
+            let attachment_part = Attachment::new(attachment_path.to_string_lossy().to_string())
+                .body(attachment_body, content_type);
+            multipart_builder = multipart_builder.singlepart(attachment_part);
+        }
+        None => {}
     }
 
-    let email = email_builder.multipart(multipart_builder)?;
+    Ok(email_builder.multipart(multipart_builder)?)
+}
+
+pub fn send_email(
+    config: EmailConfig,
+    recipient: Vec<String>,
+    subject: &str,
+    body: &str,
+    cc: Option<Vec<String>>,
+    bcc: Option<Vec<String>>,
+    attachment: Option<&str>,
+) -> Result<()> {
+    arg_check(&config, &recipient)?;
+
+    let email = msg_builder(
+        config.sender_email.as_str(),
+        recipient,
+        subject,
+        body,
+        cc,
+        bcc,
+        attachment,
+    )?;
 
     // Open a remote connection to the SMTP server with STARTTLS
-    let mailer = SmtpTransport::starttls_relay(server)?
-        .credentials(creds)
+    let mailer = SmtpTransport::starttls_relay(config.server.as_str())?
+        .credentials(Credentials::new(config.username, config.password))
         .build();
 
     // Send the email

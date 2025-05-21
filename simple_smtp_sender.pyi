@@ -1,3 +1,5 @@
+from typing import List
+
 class EmailConfig:
     """
     Configuration for sending emails.
@@ -22,11 +24,11 @@ class EmailConfig:
 
 def send_email(
     config: EmailConfig,
-    recipient: str,
+    recipient: List[str],
     subject: str,
     body: str,
-    cc: str | None = None,
-    bcc: str | None = None,
+    cc: List[str] | None = None,
+    bcc: List[str] | None = None,
     attachment: str | None = None,
 ) -> str:
     """

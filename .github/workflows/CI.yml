@@ -106,8 +106,8 @@ jobs:
         with:
           python-version: 3.x
           architecture: ${{ matrix.platform.target }}
-      - name: Install OpenSSL
-        run: vcpkg install openssl:x64-windows-static-md
+      #      - name: Install OpenSSL
+      #        run: vcpkg install openssl:x64-windows-static-md
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:

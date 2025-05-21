@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use anyhow::{anyhow, Result};
 
 use lettre::message::header::ContentType;
-use lettre::message::{Attachment, Mailbox, MessageBuilder, MultiPart, SinglePart};
+use lettre::message::{Attachment, Mailbox, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 use pyo3::PyErr;
@@ -21,17 +21,17 @@ fn arg_check(config: &EmailConfig, recipient: &Vec<String>) -> Result<bool> {
         return Err(anyhow!("No recipient"));
     }
 
-    Ok(())
+    Ok(true)
 }
 
 fn msg_builder(
-    from: &str,
+    from: String,
     recipient: Vec<String>,
-    subject: &str,
-    body: &str,
+    subject: String,
+    body: String,
     cc: Option<Vec<String>>,
     bcc: Option<Vec<String>>,
-    attachment: Option<&str>,
+    attachment: Option<String>,
 ) -> Result<Message> {
     let from_email = from.parse::<Mailbox>()?;
     let mut email_builder = Message::builder().from(from_email).subject(subject);
@@ -90,16 +90,16 @@ fn msg_builder(
 pub fn send_email(
     config: EmailConfig,
     recipient: Vec<String>,
-    subject: &str,
-    body: &str,
+    subject: String,
+    body: String,
     cc: Option<Vec<String>>,
     bcc: Option<Vec<String>>,
-    attachment: Option<&str>,
+    attachment: Option<String>,
 ) -> Result<()> {
     arg_check(&config, &recipient)?;
 
     let email = msg_builder(
-        config.sender_email.as_str(),
+        config.sender_email,
         recipient,
         subject,
         body,
@@ -110,7 +110,10 @@ pub fn send_email(
 
     // Open a remote connection to the SMTP server with STARTTLS
     let mailer = SmtpTransport::starttls_relay(config.server.as_str())?
-        .credentials(Credentials::new(config.username, config.password))
+        .credentials(Credentials::new(
+            config.username.to_string(),
+            config.password.to_string(),
+        ))
         .build();
 
     // Send the email

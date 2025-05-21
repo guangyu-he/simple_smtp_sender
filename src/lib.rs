@@ -9,11 +9,11 @@ use pyo3::prelude::*;
 fn send_email(
     config: EmailConfig,
     recipient: Vec<String>,
-    subject: &str,
-    body: &str,
+    subject: String,
+    body: String,
     cc: Option<Vec<String>>,
     bcc: Option<Vec<String>>,
-    attachment: Option<&str>,
+    attachment: Option<String>,
 ) -> PyResult<()> {
     match email::send_email(config, recipient, subject, body, cc, bcc, attachment) {
         Ok(_) => Ok(()),

@@ -65,9 +65,8 @@ jobs:
             target: armv7
     steps:
       - uses: actions/checkout@v4
-      - name: Install OpenSSL
-        run: |
-          apk add --no-cache openssl-dev pkgconfig
+      - name: Install libssl-dev
+        run: sudo apt-get update && sudo apt-get install libssl-dev
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x

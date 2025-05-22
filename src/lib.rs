@@ -1,7 +1,10 @@
 mod email;
 mod email_config;
 
-use email_config::EmailConfig;
+pub use email::async_send_email as send_email_async;
+pub use email::send_email as send_email_sync;
+pub use email_config::EmailConfig;
+
 use pyo3::prelude::*;
 use pyo3_async_runtimes::tokio::future_into_py;
 
@@ -16,7 +19,7 @@ fn send_email(
     bcc: Option<Vec<String>>,
     attachment: Option<String>,
 ) -> PyResult<()> {
-    match email::send_email(config, recipient, subject, body, cc, bcc, attachment) {
+    match send_email_sync(config, recipient, subject, body, cc, bcc, attachment) {
         Ok(_) => Ok(()),
         Err(e) => Err(pyo3::exceptions::PyValueError::new_err(e.to_string())),
     }
@@ -51,10 +54,12 @@ fn async_send_email<'p>(
         None => None,
     };
 
-    future_into_py(
-        py,
-        email::async_send_email(config, recipient, subject, body, cc, bcc, attachment),
-    )
+    future_into_py(py, async move {
+        match send_email_async(config, recipient, subject, body, cc, bcc, attachment).await {
+            Ok(_) => Ok(()),
+            Err(e) => Err(pyo3::exceptions::PyValueError::new_err(e.to_string())),
+        }
+    })
 }
 
 /// A Python module implemented in Rust.

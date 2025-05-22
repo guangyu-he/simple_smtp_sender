@@ -8,7 +8,6 @@ use lettre::message::{Attachment, Mailbox, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{AsyncSmtpTransport, AsyncTransport, Tokio1Executor};
 use lettre::{Message, SmtpTransport, Transport};
-use pyo3::PyErr;
 
 use crate::email_config::EmailConfig;
 
@@ -132,10 +131,10 @@ pub async fn async_send_email(
     cc: Option<Vec<String>>,
     bcc: Option<Vec<String>>,
     attachment: Option<String>,
-) -> Result<(), PyErr> {
+) -> Result<()> {
     let _: bool = match arg_check(&config, &recipient) {
         Ok(b) => b,
-        Err(e) => return Err(pyo3::exceptions::PyValueError::new_err(e.to_string())),
+        Err(e) => return Err(anyhow!(e)),
     };
 
     let email = match msg_builder(
@@ -148,7 +147,7 @@ pub async fn async_send_email(
         attachment,
     ) {
         Ok(email) => email,
-        Err(e) => return Err(pyo3::exceptions::PyValueError::new_err(e.to_string())),
+        Err(e) => return Err(anyhow!(e)),
     };
 
     let mailer = match AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(config.server.as_str())
@@ -159,14 +158,11 @@ pub async fn async_send_email(
                 config.password.to_string(),
             ))
             .build(),
-        Err(e) => return Err(pyo3::exceptions::PyValueError::new_err(e.to_string())),
+        Err(e) => return Err(anyhow!(e)),
     };
 
     match mailer.send(email).await {
         Ok(_) => Ok(()),
-        Err(e) => Err(pyo3::exceptions::PyException::new_err(format!(
-            "Error sending email, {}",
-            e
-        ))),
+        Err(e) => Err(anyhow!(e)),
     }
 }

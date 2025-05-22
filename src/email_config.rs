@@ -1,8 +1,10 @@
 use pyo3::{pyclass, pymethods};
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(Clone)]
 #[pyclass(dict, get_all, set_all, str, subclass)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct EmailConfig {
     pub server: String,
     pub sender_email: String,

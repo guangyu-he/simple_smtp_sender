@@ -1,19 +1,20 @@
 # simple_smtp_sender
 
-A Simple SMTP Email Sender with the support of sync or async sending.
-Powered by powered by Rust, [lettre](https://lettre.rs/) and [PyO3](https://github.com/PyO3/pyo3).
+A Simple SMTP Email sender crate with the support of sync or async sending.
+Can be called from Python. Powered by powered by Rust, [lettre](https://lettre.rs/)
+and [PyO3](https://github.com/PyO3/pyo3).
 
 ## Overview
 
-This project provides a Python extension module implemented in Rust for sending emails via SMTP, including support for
+This project provides rust crate and a Python extension module implemented in Rust for sending emails via SMTP, including support for
 attachments, CC, and BCC. There are methods for both synchronous and asynchronous sending.
 It leverages the performance and safety of Rust, exposes a convenient Python API, and is built
 using [PyO3](https://github.com/PyO3/pyo3) and [lettre](https://lettre.rs/).
-The module is compatible with Python 3.10 and above.
+The python module is compatible with Python 3.10 and above.
 
 ## Features
 
-- Send emails via SMTP synchronously or asynchronously from Python
+- Send emails via SMTP synchronously or asynchronously
 - Support HTML email contents
 - Attach files to emails
 - Support for CC and BCC
@@ -40,6 +41,7 @@ maturin develop
 ```
 
 Or build a wheel:
+
 ```bash
 maturin build
 pip install target/wheels/config_lang_serder-*.whl

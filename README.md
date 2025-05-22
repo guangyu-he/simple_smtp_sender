@@ -25,6 +25,8 @@ The module is compatible with Python 3.10 and above.
 ### from PyPI
 
 ```bash
+uv pip install simple_smtp_sender
+# or
 pip install simple_smtp_sender
 ```
 
@@ -34,7 +36,13 @@ pip install simple_smtp_sender
 git clone https://github.com/guangyu-he/simple_smtp_sender.git
 cd simple_smtp_sender
 # prepare venv and maturin if needed
+maturin develop
+```
+
+Or build a wheel:
+```bash
 maturin build
+pip install target/wheels/config_lang_serder-*.whl
 ```
 
 ### Requirements

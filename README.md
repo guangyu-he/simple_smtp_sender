@@ -6,7 +6,8 @@ and [PyO3](https://github.com/PyO3/pyo3).
 
 ## Overview
 
-This project provides rust crate and a Python extension module implemented in Rust for sending emails via SMTP, including support for
+This project provides rust crate and a Python extension module implemented in Rust for sending emails via SMTP,
+including support for
 attachments, CC, and BCC. There are methods for both synchronous and asynchronous sending.
 It leverages the performance and safety of Rust, exposes a convenient Python API, and is built
 using [PyO3](https://github.com/PyO3/pyo3) and [lettre](https://lettre.rs/).
@@ -53,6 +54,39 @@ pip install target/wheels/config_lang_serder-*.whl
 - Rust toolchain (for building)
 
 ## Usage
+
+An example test from Rust crate:
+
+```rust
+use simple_smtp_sender::{send_email_async, send_email_sync, EmailConfig};
+
+#[test]
+fn send_email_sync_test() {
+    let config = EmailConfig::new(
+        "smtp.example.com",
+        "your@email.com",
+        "your_username",
+        "your_password",
+    );
+    let result = send_email_sync(config, vec!["recipient@email.com"], "Test Email", "Hello from Rust!", None, None, None);
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+fn send_email_async_test() {
+    let config = EmailConfig::new(
+        "smtp.example.com",
+        "your@email.com",
+        "your_username",
+        "your_password",
+    );
+    let result = send_email_async(config, vec!["recipient@email.com"], "Test Email", "Hello from Rust!", None, None, None).await;
+    assert!(result.is_ok());
+}
+
+```
+
+An example from Python API:
 
 ```python
 from simple_smtp_sender import EmailConfig, send_email, async_send_email

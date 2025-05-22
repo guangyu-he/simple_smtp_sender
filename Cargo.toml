@@ -1,6 +1,6 @@
 [package]
 name = "simple_smtp_sender"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 description = "A Simple SMTP Email Sender with the support of sync or async sending. Powered by PyO3"
 repository = "https://github.com/guangyuhe/simple_smtp_sender"

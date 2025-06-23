@@ -21,10 +21,12 @@ The python module is compatible with Python 3.10 and above.
 - Support for CC and BCC
 - Secure authentication
 - Easy configuration via Python class
+- Flexible feature flags for Rust-only or Python-enabled builds
+- No Python dependencies required for Rust-only usage
 
 ## Installation
 
-### from PyPI
+### Python Package from PyPI
 
 ```bash
 uv pip install simple_smtp_sender
@@ -32,7 +34,20 @@ uv pip install simple_smtp_sender
 pip install simple_smtp_sender
 ```
 
-### from source (requires Rust toolchain and maturin)
+### Rust Crate
+
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+# Default: includes Python bindings (requires Python environment)
+simple_smtp_sender = "0.2.3"
+
+# Rust-only version (no Python dependencies)
+simple_smtp_sender = { version = "0.2.3", default-features = false, features = ["rslib"] }
+```
+
+### Build from Source (requires Rust toolchain and maturin)
 
 ```bash
 git clone https://github.com/guangyu-he/simple_smtp_sender.git
@@ -45,13 +60,13 @@ Or build a wheel:
 
 ```bash
 maturin build
-pip install target/wheels/config_lang_serder-*.whl
+pip install target/wheels/simple_smtp_sender-*.whl
 ```
 
 ### Requirements
 
-- Python >= 3.10
-- Rust toolchain (for building)
+- Python >= 3.10 (for Python package)
+- Rust toolchain (for building from source)
 
 ## Usage
 

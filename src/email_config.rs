@@ -1,9 +1,10 @@
+#[cfg(feature = "python")]
 use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(Clone)]
-#[pyclass(dict, get_all, set_all, str, subclass)]
+#[cfg_attr(feature = "python", pyclass(dict, get_all, set_all, str, subclass))]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EmailConfig {
     pub server: String,
@@ -12,10 +13,7 @@ pub struct EmailConfig {
     pub password: String,
 }
 
-#[pymethods]
 impl EmailConfig {
-    #[new]
-    #[pyo3(signature = (server, sender_email, username, password))]
     pub fn new(server: &str, sender_email: &str, username: &str, password: &str) -> Self {
         EmailConfig {
             server: server.to_string(),
@@ -23,6 +21,16 @@ impl EmailConfig {
             username: username.to_string(),
             password: password.to_string(),
         }
+    }
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl EmailConfig {
+    #[new]
+    #[pyo3(signature = (server, sender_email, username, password))]
+    pub fn py_new(server: &str, sender_email: &str, username: &str, password: &str) -> Self {
+        Self::new(server, sender_email, username, password)
     }
 }
 

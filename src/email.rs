@@ -77,7 +77,11 @@ fn msg_builder(
             let attachment_content_type =
                 mime_guess::from_path(&attachment_path).first_or_text_plain();
             let content_type = ContentType::parse(&attachment_content_type.to_string())?;
-            let attachment_part = Attachment::new(attachment_path.to_string_lossy().to_string())
+            let filename = attachment_path.file_name()
+                .ok_or_else(|| anyhow!("Invalid attachment path"))?
+                .to_string_lossy()
+                .to_string();
+            let attachment_part = Attachment::new(filename)
                 .body(attachment_body, content_type);
             multipart_builder = multipart_builder.singlepart(attachment_part);
         }

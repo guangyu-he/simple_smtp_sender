@@ -41,10 +41,10 @@ Add to your `Cargo.toml`:
 ```toml
 [dependencies]
 # Default: includes Python bindings (requires Python environment)
-simple_smtp_sender = "0.2.3"
+simple_smtp_sender = "0.2.4"
 
 # Rust-only version (no Python dependencies)
-simple_smtp_sender = { version = "0.2.3", default-features = false, features = ["rslib"] }
+simple_smtp_sender = { version = "0.2.4", default-features = false, features = ["rslib"] }
 ```
 
 ### Build from Source (requires Rust toolchain and maturin)

@@ -15,16 +15,16 @@ name = "simple_smtp_sender"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyo3 = { features = ["auto-initialize", "abi3-py310"], version = "0.25.0", optional = true }
+pyo3 = { features = ["extension-module", "abi3-py310"], version = "0.26.0", optional = true }
 openssl = { version = "0.10.73", features = ["vendored"] }
-lettre = { version = "0.11.17", features = ["builder", "smtp-transport", "tokio1", "tokio1-native-tls"] }
+lettre = { version = "0.11.18", features = ["builder", "smtp-transport", "tokio1", "tokio1-native-tls"] }
 mime_guess = "2.0.5"
-anyhow = "1.0.98"
-pyo3-async-runtimes = { version = "0.25", features = ["attributes", "tokio-runtime"], optional = true }
+anyhow = "1.0.99"
+pyo3-async-runtimes = { version = "0.26.0", features = ["attributes", "tokio-runtime"], optional = true }
 serde = { version = "1.0.219", features = ["derive"] }
 
 [dev-dependencies]
-tokio = { version = "1.45.1", features = ["test-util", "rt", "macros"] }
+tokio = { version = "1.47.1", features = ["test-util", "rt", "macros"] }
 
 [features]
 default = ["python"]

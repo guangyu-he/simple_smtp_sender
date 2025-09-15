@@ -1,7 +1,7 @@
 [package]
 name = "simple_smtp_sender"
-version = "0.2.4"
-edition = "2021"
+version = "0.2.5"
+edition = "2024"
 description = "A Simple SMTP Email sender crate with the support of sync or async sending. Can be called from Python. Powered by PyO3."
 repository = "https://github.com/guangyuhe/simple_smtp_sender"
 license = "MIT"
@@ -21,7 +21,7 @@ lettre = { version = "0.11.18", features = ["builder", "smtp-transport", "tokio1
 mime_guess = "2.0.5"
 anyhow = "1.0.99"
 pyo3-async-runtimes = { version = "0.26.0", features = ["attributes", "tokio-runtime"], optional = true }
-serde = { version = "1.0.219", features = ["derive"] }
+serde = { version = "1.0.223", features = ["derive"] }
 
 [dev-dependencies]
 tokio = { version = "1.47.1", features = ["test-util", "rt", "macros"] }

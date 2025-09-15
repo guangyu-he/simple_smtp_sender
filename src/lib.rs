@@ -3,7 +3,7 @@ mod email_config;
 
 pub use email::async_send_email as send_email_async;
 pub use email::send_email as send_email_sync;
-pub use email_config::EmailConfig;
+pub use email_config::{EmailBuilder, EmailConfig};
 
 #[cfg(feature = "python")]
 use pyo3::prelude::*;

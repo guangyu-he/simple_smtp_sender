@@ -72,6 +72,9 @@ pip install target/wheels/simple_smtp_sender-*.whl
 
 An example test from Rust crate:
 
+**Note**: this test can only be run natively if you installed with
+`default-features = false, features = ["rslib"]`
+
 ```rust
 use simple_smtp_sender::{send_email_async, send_email_sync, EmailConfig};
 
@@ -83,7 +86,7 @@ fn send_email_sync_test() {
         "your_username",
         "your_password",
     );
-    let result = send_email_sync(config, vec!["recipient@email.com"], "Test Email", "Hello from Rust!", None, None, None);
+    let result = send_email_sync(config, vec!["recipient@email.com".to_string()], "Test Email", "Hello from Rust!", None, None, None);
     assert!(result.is_ok());
 }
 
@@ -95,10 +98,33 @@ fn send_email_async_test() {
         "your_username",
         "your_password",
     );
-    let result = send_email_async(config, vec!["recipient@email.com"], "Test Email", "Hello from Rust!", None, None, None).await;
+    let result = send_email_async(config, vec!["recipient@email.com".to_string()], "Test Email", "Hello from Rust!", None, None, None).await;
     assert!(result.is_ok());
 }
 
+//new builder method
+#[test]
+fn send_email_sync_builder_test() {
+    let config = EmailConfig::new(
+        "smtp.example.com",
+        "your@email.com",
+        "your_username",
+        "your_password",
+    );
+    let result = config
+        .send_to(vec!["recipient@email.com".to_string()])
+        .subject("Test Email Builder")
+        .body("Hello from Rust Email Builder!")
+        .send();
+    assert!(result.is_ok());
+}
+
+```
+
+If you installed the Python feature (default), you can test the above codes using for example:
+
+```shell
+cargo test --no-default-features --features="rslib" send_email_sync_test
 ```
 
 An example from Python API:

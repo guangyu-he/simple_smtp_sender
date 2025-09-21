@@ -1,5 +1,5 @@
 [build-system]
-requires = ["maturin>=1.8,<2.0"]
+requires = ["maturin>=1.9,<2.0"]
 build-backend = "maturin"
 
 [project]
@@ -15,8 +15,11 @@ dynamic = ["version"]
 features = ["pyo3/extension-module"]
 [dependency-groups]
 dev = [
-    "maturin>=1.8.6",
-    "black>=25.1.0",
-    "ruff>=0.11.10",
+    "maturin",
+    "black",
+    "ruff",
 ]
 
+tools = [
+    "maturin",
+]

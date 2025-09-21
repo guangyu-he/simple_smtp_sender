@@ -1,22 +1,20 @@
 [package]
 name = "simple_smtp_sender"
 version = "0.2.5"
-edition = "2024"
+edition = "2021"
 description = "A Simple SMTP Email sender crate with the support of sync or async sending. Can be called from Python. Powered by PyO3."
 repository = "https://github.com/guangyuhe/simple_smtp_sender"
 license = "MIT"
 authors = ["Guangyu He <fredhgy2010@gmail.com>"]
 exclude = [".github/workflows/CI.yml", "simple_smtp_sender.pyi", ".gitignore", "pyproject.toml"]
 
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name = "simple_smtp_sender"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 pyo3 = { features = ["extension-module", "abi3-py310"], version = "0.26.0", optional = true }
-openssl = { version = "0.10.73", features = ["vendored"] }
+openssl = { version = "0.10.73", features = ["vendored"], optional = true }
 lettre = { version = "0.11.18", features = ["builder", "smtp-transport", "tokio1", "tokio1-native-tls"] }
 mime_guess = "2.0.5"
 anyhow = "1.0.99"
@@ -27,7 +25,7 @@ serde = { version = "1.0.223", features = ["derive"] }
 tokio = { version = "1.47.1", features = ["test-util", "rt", "macros"] }
 
 [features]
-default = ["python"]
-rslib = []
+default = ["python", "vendored-openssl"]
 python = ["dep:pyo3", "dep:pyo3-async-runtimes"]
 extension-module = ["python", "pyo3/extension-module"]
+vendored-openssl = ["dep:openssl"]

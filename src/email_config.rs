@@ -4,7 +4,7 @@ use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::email::send_email;
+use crate::email::{async_send_email, send_email};
 
 #[derive(Clone, Debug)]
 pub struct EmailBuilder {
@@ -68,6 +68,22 @@ impl EmailBuilder {
             self.bcc,
             self.attachment,
         )
+    }
+
+    pub async fn send_async(self) -> Result<()> {
+        let subject = self.subject.unwrap_or_else(|| "No Subject".to_string());
+        let body = self.body.unwrap_or_else(|| "No Body".to_string());
+
+        async_send_email(
+            self.config,
+            self.recipient,
+            subject,
+            body,
+            self.cc,
+            self.bcc,
+            self.attachment,
+        )
+        .await
     }
 }
 

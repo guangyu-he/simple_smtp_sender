@@ -24,7 +24,7 @@ fn send_email(
 ) -> PyResult<()> {
     match send_email_sync(config, recipient, subject, body, cc, bcc, attachment) {
         Ok(_) => Ok(()),
-        Err(e) => Err(pyo3::exceptions::PyValueError::new_err(e.to_string())),
+        Err(e) => Err(pyo3::exceptions::PyException::new_err(e.to_string())),
     }
 }
 
@@ -33,31 +33,14 @@ fn send_email(
 #[pyo3(signature = (config, recipient, subject, body, cc = None, bcc = None, attachment = None))]
 fn async_send_email<'p>(
     py: Python<'p>,
-    config: Bound<'p, PyAny>,
-    recipient: Bound<'p, PyAny>,
-    subject: Bound<'p, PyAny>,
-    body: Bound<'p, PyAny>,
-    cc: Option<Bound<'p, PyAny>>,
-    bcc: Option<Bound<'p, PyAny>>,
-    attachment: Option<Bound<'p, PyAny>>,
+    config: EmailConfig,
+    recipient: Vec<String>,
+    subject: String,
+    body: String,
+    cc: Option<Vec<String>>,
+    bcc: Option<Vec<String>>,
+    attachment: Option<String>,
 ) -> PyResult<Bound<'p, PyAny>> {
-    let config = config.extract::<EmailConfig>()?;
-    let recipient = recipient.extract::<Vec<String>>()?;
-    let subject = subject.extract::<String>()?;
-    let body = body.extract::<String>()?;
-    let cc = match cc {
-        Some(cc) => Some(cc.extract::<Vec<String>>()?),
-        None => None,
-    };
-    let bcc = match bcc {
-        Some(bcc) => Some(bcc.extract::<Vec<String>>()?),
-        None => None,
-    };
-    let attachment = match attachment {
-        Some(attachment) => Some(attachment.extract::<String>()?),
-        None => None,
-    };
-
     future_into_py(py, async move {
         match send_email_async(config, recipient, subject, body, cc, bcc, attachment).await {
             Ok(_) => Ok(()),

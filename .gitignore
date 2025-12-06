@@ -71,4 +71,5 @@ docs/_build/
 # Pyenv
 .python-version
 
-tests
+examples/
+

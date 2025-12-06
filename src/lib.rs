@@ -1,9 +1,11 @@
 mod email;
+mod email_client;
 mod email_config;
 
 pub use email::async_send_email as send_email_async;
 pub use email::send_email as send_email_sync;
-pub use email_config::{EmailBuilder, EmailConfig};
+pub use email_client::EmailClient;
+pub use email_config::EmailConfig;
 
 #[cfg(feature = "python")]
 use pyo3::prelude::*;
@@ -31,7 +33,7 @@ fn send_email(
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (config, recipient, subject, body, cc = None, bcc = None, attachment = None))]
-fn async_send_email<'p>(
+pub fn async_send_email<'p>(
     py: Python<'p>,
     config: Bound<'p, PyAny>,
     recipient: Bound<'p, PyAny>,
@@ -68,9 +70,11 @@ fn async_send_email<'p>(
 
 #[cfg(feature = "python")]
 #[pymodule]
-fn simple_smtp_sender(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<EmailConfig>()?;
-    m.add_function(wrap_pyfunction!(send_email, m)?)?;
-    m.add_function(wrap_pyfunction!(async_send_email, m)?)?;
-    Ok(())
+mod simple_smtp_sender {
+    #[pymodule_export]
+    use crate::async_send_email;
+    #[pymodule_export]
+    use crate::email_config::EmailConfig;
+    #[pymodule_export]
+    use crate::send_email;
 }

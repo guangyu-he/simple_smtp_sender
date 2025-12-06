@@ -1,79 +1,14 @@
-use anyhow::Result;
-#[cfg(feature = "python")]
-use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fmt;
 
-use crate::email::send_email;
-
-#[derive(Clone, Debug)]
-pub struct EmailBuilder {
-    config: EmailConfig,
-    recipient: Vec<String>,
-    subject: Option<String>,
-    body: Option<String>,
-    cc: Option<Vec<String>>,
-    bcc: Option<Vec<String>>,
-    attachment: Option<String>,
-}
-
-impl EmailBuilder {
-    pub fn new(config: EmailConfig, recipient: Vec<String>) -> Self {
-        EmailBuilder {
-            config,
-            recipient,
-            subject: None,
-            body: None,
-            cc: None,
-            bcc: None,
-            attachment: None,
-        }
-    }
-
-    pub fn subject(mut self, subject: impl Into<String>) -> Self {
-        self.subject = Some(subject.into());
-        self
-    }
-
-    pub fn body(mut self, body: impl Into<String>) -> Self {
-        self.body = Some(body.into());
-        self
-    }
-
-    pub fn cc(mut self, cc: Vec<String>) -> Self {
-        self.cc = Some(cc);
-        self
-    }
-
-    pub fn bcc(mut self, bcc: Vec<String>) -> Self {
-        self.bcc = Some(bcc);
-        self
-    }
-
-    pub fn attachment(mut self, attachment: impl Into<String>) -> Self {
-        self.attachment = Some(attachment.into());
-        self
-    }
-
-    pub fn send(self) -> Result<()> {
-        let subject = self.subject.unwrap_or_else(|| "No Subject".to_string());
-        let body = self.body.unwrap_or_else(|| "No Body".to_string());
-
-        send_email(
-            self.config,
-            self.recipient,
-            subject,
-            body,
-            self.cc,
-            self.bcc,
-            self.attachment,
-        )
-    }
-}
+#[cfg(feature = "python")]
+use pyo3::{Bound, PyResult, pyclass, pymethods, types::PyType};
 
 #[derive(Clone)]
-#[cfg_attr(feature = "python", pyclass(dict, get_all, set_all, str, subclass))]
-#[derive(Serialize, Deserialize, Debug)]
+#[cfg_attr(feature = "python", pyclass(dict, get_all, set_all, str, eq, subclass))]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+/// Configuration for email server connection
 pub struct EmailConfig {
     pub server: String,
     pub sender_email: String,
@@ -82,6 +17,12 @@ pub struct EmailConfig {
 }
 
 impl EmailConfig {
+    /// Creates a new EmailConfig instance
+    /// # Arguments
+    /// * `server` - SMTP server address
+    /// * `sender_email` - Sender email address
+    /// * `username` - Username for SMTP authentication
+    /// * `password` - Password for SMTP authentication
     pub fn new(server: &str, sender_email: &str, username: &str, password: &str) -> Self {
         EmailConfig {
             server: server.to_string(),
@@ -91,18 +32,23 @@ impl EmailConfig {
         }
     }
 
-    pub fn send_to(self, recipient: Vec<String>) -> EmailBuilder {
-        EmailBuilder::new(self, recipient)
-    }
-}
+    /// Loads EmailConfig from environment variables
+    /// - EMAIL_SERVER
+    /// - EMAIL_SENDER_EMAIL
+    /// - EMAIL_USERNAME
+    /// - EMAIL_PASSWORD
+    pub fn from_env() -> Self {
+        let server = std::env::var("EMAIL_SERVER").unwrap_or_default();
+        let sender_email = std::env::var("EMAIL_SENDER_EMAIL").unwrap_or_default();
+        let username = std::env::var("EMAIL_USERNAME").unwrap_or_default();
+        let password = std::env::var("EMAIL_PASSWORD").unwrap_or_default();
 
-#[cfg(feature = "python")]
-#[pymethods]
-impl EmailConfig {
-    #[new]
-    #[pyo3(signature = (server, sender_email, username, password))]
-    pub fn py_new(server: &str, sender_email: &str, username: &str, password: &str) -> Self {
-        Self::new(server, sender_email, username, password)
+        EmailConfig {
+            server,
+            sender_email,
+            username,
+            password,
+        }
     }
 }
 
@@ -113,5 +59,50 @@ impl fmt::Display for EmailConfig {
             "EmailConfig<server={}, sender_email={}, username={}, password={}>",
             self.server, self.sender_email, self.username, self.password
         )
+    }
+}
+
+impl From<HashMap<String, String>> for EmailConfig {
+    fn from(map: HashMap<String, String>) -> Self {
+        EmailConfig {
+            server: map.get("server").cloned().unwrap_or_default(),
+            sender_email: map.get("sender_email").cloned().unwrap_or_default(),
+            username: map.get("username").cloned().unwrap_or_default(),
+            password: map.get("password").cloned().unwrap_or_default(),
+        }
+    }
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl EmailConfig {
+    #[new]
+    #[pyo3(signature = (server, sender_email, username, password))]
+    /// Creates a new EmailConfig instance
+    /// # Arguments
+    /// * `server` - SMTP server address
+    /// * `sender_email` - Sender email address
+    /// * `username` - Username for SMTP authentication
+    /// * `password` - Password for SMTP authentication
+    pub fn py_new(server: &str, sender_email: &str, username: &str, password: &str) -> Self {
+        Self::new(server, sender_email, username, password)
+    }
+
+    #[classmethod]
+    /// Loads EmailConfig from environment variables
+    /// # Returns
+    /// An EmailConfig instance populated from environment variables
+    pub fn load_from_env(_cls: &Bound<'_, PyType>) -> PyResult<Self> {
+        Ok(Self::from_env())
+    }
+
+    #[classmethod]
+    /// Loads EmailConfig from a dictionary
+    /// # Arguments
+    /// * `map` - A dictionary containing configuration parameters
+    /// # Returns
+    /// An EmailConfig instance populated from the dictionary
+    pub fn load_from_map(_cls: &Bound<'_, PyType>, map: HashMap<String, String>) -> PyResult<Self> {
+        Ok(Self::from(map))
     }
 }

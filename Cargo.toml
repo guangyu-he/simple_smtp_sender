@@ -6,7 +6,7 @@ description = "A Simple SMTP Email sender crate with the support of sync or asyn
 repository = "https://github.com/guangyuhe/simple_smtp_sender"
 license = "MIT"
 authors = ["Guangyu He <fredhgy2010@gmail.com>"]
-exclude = [".github/workflows/CI.yml", "simple_smtp_sender.pyi", ".gitignore", "pyproject.toml"]
+exclude = [".github/workflows/CI.yml", "simple_smtp_sender.pyi", ".gitignore", "pyproject.toml", "tests/*", "examples/*", "docs/*", "mac_build.sh"]
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

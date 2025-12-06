@@ -84,8 +84,13 @@ impl EmailConfig {
     /// * `sender_email` - Sender email address
     /// * `username` - Username for SMTP authentication
     /// * `password` - Password for SMTP authentication
-    pub fn py_new(server: &str, sender_email: &str, username: &str, password: &str) -> Self {
-        Self::new(server, sender_email, username, password)
+    pub fn py_new(
+        server: &str,
+        sender_email: &str,
+        username: &str,
+        password: &str,
+    ) -> PyResult<Self> {
+        Ok(Self::new(server, sender_email, username, password))
     }
 
     #[classmethod]

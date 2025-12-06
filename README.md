@@ -1,7 +1,7 @@
 # simple_smtp_sender
 
 A Simple SMTP Email sender crate with the support of sync or async sending.
-Can be called from Python. Powered by powered by Rust, [lettre](https://lettre.rs/)
+Can be called from Python. Powered by Rust, [lettre](https://lettre.rs/)
 and [PyO3](https://github.com/PyO3/pyo3).
 
 ## Overview
@@ -36,30 +36,30 @@ pip install simple_smtp_sender
 
 ### Rust Crate
 
-Add to your `Cargo.toml`:
+Please note that the default feature include the Python PyO3 binding, to use the crate as native
+rust pacakge, please declare the dependency with `default-feature=false`:
 
 ```toml
 [dependencies]
-# Default: includes Python bindings (requires Python environment)
-simple_smtp_sender = "0.2.4"
-
 # Rust-only version (no Python dependencies)
-simple_smtp_sender = { version = "0.2.4", default-features = false, features = ["rslib"] }
+simple_smtp_sender = { version = "0.2.6", default-features = false }
 ```
 
-### Build from Source (requires Rust toolchain and maturin)
+### Build Python package from Source (requires Rust toolchain and maturin)
 
 ```bash
 git clone https://github.com/guangyu-he/simple_smtp_sender.git
 cd simple_smtp_sender
-# prepare venv and maturin if needed
-maturin develop
+## prepare venv and maturin if needed
+# uv venv
+# uv sync
+uv run maturin develop
 ```
 
 Or build a wheel:
 
 ```bash
-maturin build
+uv run maturin build
 pip install target/wheels/simple_smtp_sender-*.whl
 ```
 
@@ -73,7 +73,7 @@ pip install target/wheels/simple_smtp_sender-*.whl
 An example test from Rust crate:
 
 **Note**: this test can only be run natively if you installed with
-`default-features = false, features = ["rslib"]`
+`default-features = false`
 
 ```rust
 use simple_smtp_sender::{send_email_async, send_email_sync, EmailConfig};
@@ -124,7 +124,7 @@ fn send_email_sync_builder_test() {
 If you installed the Python feature (default), you can test the above codes using for example:
 
 ```shell
-cargo test --no-default-features --features="rslib" send_email_sync_test
+cargo test --no-default-features send_email_sync_test
 ```
 
 An example from Python API:

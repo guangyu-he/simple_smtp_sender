@@ -26,7 +26,7 @@ fn send_email(
 ) -> PyResult<()> {
     match send_email_sync(config, recipient, subject, body, cc, bcc, attachment) {
         Ok(_) => Ok(()),
-        Err(e) => Err(pyo3::exceptions::PyValueError::new_err(e.to_string())),
+        Err(e) => Err(pyo3::exceptions::PyException::new_err(e.to_string())),
     }
 }
 

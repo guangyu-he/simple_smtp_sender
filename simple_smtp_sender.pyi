@@ -1,4 +1,4 @@
-from typing import List, Awaitable
+from typing import List, Self, Dict
 
 class EmailConfig:
     """
@@ -19,6 +19,26 @@ class EmailConfig:
             EmailConfig object
 
         Note: This method is used to create a new EmailConfig object.
+        """
+        ...
+
+    @classmethod
+    def load_from_env(cls) -> Self:
+        """
+        Load EmailConfig from environment variables.
+
+        Returns:
+            EmailConfig object
+        """
+        ...
+
+    @classmethod
+    def load_from_map(cls, config_map: Dict[str, str]) -> Self:
+        """
+        Load EmailConfig from a dictionary.
+
+        Args:
+            config_map: Dictionary containing configuration parameters
         """
         ...
 
@@ -48,7 +68,7 @@ def send_email(
     """
     ...
 
-def async_send_email(
+async def async_send_email(
     config: EmailConfig,
     recipient: List[str],
     subject: str,
@@ -56,7 +76,7 @@ def async_send_email(
     cc: List[str] | None = None,
     bcc: List[str] | None = None,
     attachment: str | None = None,
-) -> Awaitable[None]:
+) -> None:
     """
     Asynchronously send an email.
 

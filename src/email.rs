@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 
 use lettre::message::header::ContentType;
 use lettre::message::{Attachment, Mailbox, MultiPart, SinglePart};
@@ -11,17 +11,15 @@ use lettre::{Message, SmtpTransport, Transport};
 
 use crate::email_config::EmailConfig;
 
-fn arg_check(config: &EmailConfig, recipient: &Vec<String>) -> Result<bool> {
-    let server = config.server.as_str();
-
-    if server == "smtp.example.com" || server == "" {
-        return Err(anyhow!("Config not set"));
+fn arg_check(server: &str, recipient: &Vec<String>) -> Result<()> {
+    if server.is_empty() {
+        anyhow::bail!("No SMTP server provided");
     }
     if recipient.is_empty() {
-        return Err(anyhow!("No recipient"));
+        anyhow::bail!("No recipient provided");
     }
 
-    Ok(true)
+    Ok(())
 }
 
 fn msg_builder(
@@ -77,12 +75,12 @@ fn msg_builder(
             let attachment_content_type =
                 mime_guess::from_path(&attachment_path).first_or_text_plain();
             let content_type = ContentType::parse(&attachment_content_type.to_string())?;
-            let filename = attachment_path.file_name()
+            let filename = attachment_path
+                .file_name()
                 .ok_or_else(|| anyhow!("Invalid attachment path"))?
                 .to_string_lossy()
                 .to_string();
-            let attachment_part = Attachment::new(filename)
-                .body(attachment_body, content_type);
+            let attachment_part = Attachment::new(filename).body(attachment_body, content_type);
             multipart_builder = multipart_builder.singlepart(attachment_part);
         }
         None => {}
@@ -100,7 +98,7 @@ pub fn send_email(
     bcc: Option<Vec<String>>,
     attachment: Option<String>,
 ) -> Result<()> {
-    arg_check(&config, &recipient)?;
+    arg_check(&config.username, &recipient)?;
 
     let email = msg_builder(
         config.sender_email,
@@ -136,10 +134,7 @@ pub async fn async_send_email(
     bcc: Option<Vec<String>>,
     attachment: Option<String>,
 ) -> Result<()> {
-    let _: bool = match arg_check(&config, &recipient) {
-        Ok(b) => b,
-        Err(e) => return Err(anyhow!(e)),
-    };
+    arg_check(&config.server, &recipient)?;
 
     let email = match msg_builder(
         config.sender_email,

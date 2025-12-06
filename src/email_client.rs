@@ -4,13 +4,13 @@ use crate::email::{async_send_email, send_email};
 #[derive(Clone, Debug)]
 /// Builder pattern for sending emails
 pub struct EmailClient {
-    config: EmailConfig,
-    recipient: Vec<String>,
-    subject: String,
-    body: Option<String>,
-    cc: Option<Vec<String>>,
-    bcc: Option<Vec<String>>,
-    attachment: Option<String>,
+    pub config: EmailConfig,
+    pub recipient: Vec<String>,
+    pub subject: String,
+    pub body: Option<String>,
+    pub cc: Option<Vec<String>>,
+    pub bcc: Option<Vec<String>>,
+    pub attachment: Option<String>,
 }
 
 impl Default for EmailClient {

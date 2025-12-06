@@ -32,3 +32,8 @@ tokio = { version = "1.48", features = ["test-util", "rt", "macros"] }
 default = ["rslib"]
 rslib = []
 python = ["dep:pyo3", "dep:pyo3-async-runtimes"]
+
+[[test]]
+name = "unit_tests"
+harness = true
+path = "tests/tests.rs"

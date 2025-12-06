@@ -9,8 +9,6 @@ use std::sync::LazyLock;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
 
-static MATURIN_REPOSITORY_URL: LazyLock<String> =
-    LazyLock::new(|| env::var("MATURIN_REPOSITORY_URL").unwrap_or_default());
 static MATURIN_USERNAME: LazyLock<String> =
     LazyLock::new(|| env::var("MATURIN_USERNAME").unwrap_or_default());
 static MATURIN_PASSWORD: LazyLock<String> =
@@ -28,10 +26,6 @@ fn build_cmd(target: &str, no_sdist: bool) -> Command {
 
     if !MATURIN_PASSWORD.is_empty() {
         cmd.args(["-p", MATURIN_PASSWORD.as_str()]);
-    }
-
-    if !MATURIN_REPOSITORY_URL.is_empty() {
-        cmd.args(["--repository-url", MATURIN_REPOSITORY_URL.as_str()]);
     }
 
     cmd.args(["--profile", "release"]);
@@ -72,8 +66,8 @@ async fn each_build(target: &str, no_sdist: bool) -> std::process::ExitCode {
 
 #[tokio::main]
 async fn main() -> std::process::ExitCode {
-    if MATURIN_REPOSITORY_URL.is_empty() {
-        eprintln!("MATURIN_REPOSITORY_URL not set");
+    if MATURIN_PASSWORD.is_empty() {
+        eprintln!("MATURIN_PASSWORD not set");
         return std::process::ExitCode::FAILURE;
     }
 

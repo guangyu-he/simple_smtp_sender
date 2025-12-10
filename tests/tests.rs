@@ -99,7 +99,7 @@ mod tests {
         use simple_smtp_sender::send_email_sync;
         let mut config = EmailConfig::from_env();
         config.password = "wrong_password".to_string();
-        let recipient = vec!["guangyu.he@golden-tech.de".to_string()];
+        let recipient = vec!["test@example.com".to_string()];
         let subject = "Test Email".to_string();
         let body = "Hello from Rust!".to_string();
         let result = send_email_sync(config, recipient, subject, body, None, None, None);
@@ -111,7 +111,7 @@ mod tests {
         use simple_smtp_sender::send_email_async;
         let mut config = EmailConfig::from_env();
         config.password = "wrong_password".to_string();
-        let recipient = vec!["guangyu.he@golden-tech.de".to_string()];
+        let recipient = vec!["test@example.com".to_string()];
         let subject = "Test Email Async".to_string();
         let body = "Hello from Rust!".to_string();
         let result = send_email_async(config, recipient, subject, body, None, None, None).await;
@@ -124,7 +124,7 @@ mod tests {
         let config = EmailConfig::from_env();
 
         EmailClient::new(config)
-            .recipient(vec!["guangyu.he@golden-tech.de".to_string()])
+            .recipient(vec!["test@example.com".to_string()])
             .subject("Test Email Builder")
             .body("Hello from Rust Email Builder!")
             .send()
@@ -137,7 +137,7 @@ mod tests {
         let config = EmailConfig::from_env();
 
         EmailClient::new(config)
-            .recipient(vec!["guangyu.he@golden-tech.de".to_string()])
+            .recipient(vec!["test@example.com".to_string()])
             .subject("Test Email Builder")
             .body("Hello from Rust Email Builder!")
             .send_async()

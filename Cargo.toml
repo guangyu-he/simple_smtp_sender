@@ -14,8 +14,9 @@ exclude = [".github/workflows/CI.yml", "simple_smtp_sender.pyi", ".gitignore", "
 name = "simple_smtp_sender"
 crate-type = ["cdylib", "rlib"]
 
+# vendored OpenSSL for Linux to avoid dependency issues
 [target.'cfg(target_os = "linux")'.dependencies]
-openssl = { version = "*", features = ["vendored"] }
+openssl = { version = "0.10.75", features = ["vendored"] }
 
 [dependencies]
 pyo3 = { features = ["extension-module", "abi3-py310", "generate-import-lib"], version = "0.27.2", optional = true }

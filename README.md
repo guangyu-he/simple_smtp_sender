@@ -42,7 +42,7 @@ rust pacakge, please declare the dependency with `default-feature=false`:
 ```toml
 [dependencies]
 # Rust-only version (no Python dependencies)
-simple_smtp_sender = { version = "0.2.6", default-features = false }
+simple_smtp_sender = { version = "0.3.0" }
 ```
 
 ### Build Python package from Source (requires Rust toolchain and maturin)
@@ -70,62 +70,11 @@ pip install target/wheels/simple_smtp_sender-*.whl
 
 ## Usage
 
-An example test from Rust crate:
+### Rust
 
-**Note**: this test can only be run natively if you installed with
-`default-features = false`
+check tests.rs in `tests/` for more examples.
 
-```rust
-use simple_smtp_sender::{send_email_async, send_email_sync, EmailConfig};
-
-#[test]
-fn send_email_sync_test() {
-    let config = EmailConfig::new(
-        "smtp.example.com",
-        "your@email.com",
-        "your_username",
-        "your_password",
-    );
-    let result = send_email_sync(config, vec!["recipient@email.com".to_string()], "Test Email", "Hello from Rust!", None, None, None);
-    assert!(result.is_ok());
-}
-
-#[tokio::test]
-fn send_email_async_test() {
-    let config = EmailConfig::new(
-        "smtp.example.com",
-        "your@email.com",
-        "your_username",
-        "your_password",
-    );
-    let result = send_email_async(config, vec!["recipient@email.com".to_string()], "Test Email", "Hello from Rust!", None, None, None).await;
-    assert!(result.is_ok());
-}
-
-//new builder method
-#[test]
-fn send_email_sync_builder_test() {
-    let config = EmailConfig::new(
-        "smtp.example.com",
-        "your@email.com",
-        "your_username",
-        "your_password",
-    );
-    let result = config
-        .send_to(vec!["recipient@email.com".to_string()])
-        .subject("Test Email Builder")
-        .body("Hello from Rust Email Builder!")
-        .send();
-    assert!(result.is_ok());
-}
-
-```
-
-If you installed the Python feature (default), you can test the above codes using for example:
-
-```shell
-cargo test --no-default-features send_email_sync_test
-```
+### Python
 
 An example from Python API:
 
@@ -181,14 +130,25 @@ asyncio.run(main())
 
 Configuration class for SMTP server and credentials.
 
+`__new__` parameters:
+
 - `server`: SMTP server URL
 - `sender_email`: Sender's email address
 - `username`: SMTP username
 - `password`: SMTP password
 
-### `send_email(config, recipient, subject, body, cc=None, bcc=None, attachment=None)`
+APIs:
 
-Sends an email synchronously (blocking) using the provided configuration.
+- `load_from_env()`: Load configuration from environment variables:
+    - `EMAIL_SERVER`
+    - `EMAIL_SENDER_EMAIL`
+    - `EMAIL_USERNAME`
+    - `EMAIL_PASSWORD`
+- `load_from_map(config_map: dict)`: Load configuration from a dictionary.
+
+### Sends an email synchronously (blocking) using the provided configuration.
+
+`send_email(config, recipient, subject, body, cc=None, bcc=None, attachment=None)`
 
 - `config`: `EmailConfig` instance
 - `recipient`: List of recipient email(s)
@@ -198,9 +158,9 @@ Sends an email synchronously (blocking) using the provided configuration.
 - `bcc`: List of BCC recipients (optional)
 - `attachment`: Path to file to attach (optional)
 
-### `async_send_email(config, recipient, subject, body, cc=None, bcc=None, attachment=None)`
+### Sends an email asynchronously (non-blocking, returns an awaitable).
 
-Sends an email asynchronously (non-blocking, returns an awaitable).
+`async_send_email(config, recipient, subject, body, cc=None, bcc=None, attachment=None)`
 
 - `config`: `EmailConfig` instance
 - `recipient`: List of recipient email(s)

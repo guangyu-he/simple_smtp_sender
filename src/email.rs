@@ -13,6 +13,12 @@ use crate::email_config::EmailConfig;
 
 fn arg_check(server: &str, recipient: &Vec<String>) -> Result<()> {
     if server.is_empty() {
+/// Check the required arguments for sending an email
+/// # Arguments
+/// * `server` - SMTP server address
+/// * `recipient` - A vector of recipient email addresses
+/// # Returns
+/// * `anyhow::Result<()>` - Result of the argument check
         anyhow::bail!("No SMTP server provided");
     }
     if recipient.is_empty() {
@@ -30,6 +36,17 @@ fn msg_builder(
     cc: Option<Vec<String>>,
     bcc: Option<Vec<String>>,
     attachment: Option<String>,
+/// Build the email message
+/// # Arguments
+/// * `from` - Sender email address
+/// * `recipient` - A vector of recipient email addresses
+/// * `subject` - Email subject
+/// * `body` - Email body
+/// * `cc` - Optional vector of CC email addresses
+/// * `bcc` - Optional vector of BCC email addresses
+/// * `attachment` - Optional attachment file path
+/// # Returns
+/// * `anyhow::Result<Message>` - Resulting email message
 ) -> Result<Message> {
     let from_email = from.parse::<Mailbox>()?;
     let mut email_builder = Message::builder().from(from_email).subject(subject);
@@ -90,6 +107,17 @@ fn msg_builder(
 }
 
 pub fn send_email(
+/// Synchronous function to send an email
+/// # Arguments
+/// * `config` - Email configuration
+/// * `recipient` - A vector of recipient email addresses
+/// * `subject` - Email subject
+/// * `body` - Email body
+/// * `cc` - Optional vector of CC email addresses
+/// * `bcc` - Optional vector of BCC email addresses
+/// * `attachment` - Optional attachment file path
+/// # Returns
+/// * `anyhow::Result<()>` - Result of the email sending operation
     config: EmailConfig,
     recipient: Vec<String>,
     subject: String,
@@ -126,6 +154,17 @@ pub fn send_email(
 }
 
 pub async fn async_send_email(
+/// Asynchronous function to send an email
+/// # Arguments
+/// * `config` - Email configuration
+/// * `recipient` - A vector of recipient email addresses
+/// * `subject` - Email subject
+/// * `body` - Email body
+/// * `cc` - Optional vector of CC email addresses
+/// * `bcc` - Optional vector of BCC email addresses
+/// * `attachment` - Optional attachment file path
+/// # Returns
+/// * `anyhow::Result<()>` - Result of the email sending operation
     config: EmailConfig,
     recipient: Vec<String>,
     subject: String,

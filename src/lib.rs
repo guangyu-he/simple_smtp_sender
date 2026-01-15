@@ -15,6 +15,7 @@ use pyo3_async_runtimes::tokio::future_into_py;
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (config, recipient, subject, body, cc = None, bcc = None, attachment = None))]
+/// Synchronous function to send an email, Python binding
 fn send_email(
     config: EmailConfig,
     recipient: Vec<String>,
@@ -33,6 +34,7 @@ fn send_email(
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (config, recipient, subject, body, cc = None, bcc = None, attachment = None))]
+/// Asynchronous function to send an email, Python binding
 pub fn async_send_email<'p>(
     py: Python<'p>,
     config: EmailConfig,

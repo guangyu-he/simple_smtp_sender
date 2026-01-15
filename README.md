@@ -36,9 +36,6 @@ pip install simple_smtp_sender
 
 ### Rust Crate
 
-Please note that the default feature include the Python PyO3 binding, to use the crate as native
-rust pacakge, please declare the dependency with `default-feature=false`:
-
 ```toml
 [dependencies]
 # Rust-only version (no Python dependencies)
@@ -47,19 +44,22 @@ simple_smtp_sender = { version = "0.3.1" }
 
 ### Build Python package from Source (requires Rust toolchain and maturin)
 
+Please note that the default feature *does not* include the Python PyO3 binding.
+To build Python binding using maturin, please declare the dependency with `--features python`:
+
 ```bash
 git clone https://github.com/guangyu-he/simple_smtp_sender.git
 cd simple_smtp_sender
 ## prepare venv and maturin if needed
 # uv venv
 # uv sync
-uv run maturin develop
+uv run maturin develop --features python
 ```
 
 Or build a wheel:
 
 ```bash
-uv run maturin build
+uv run maturin build --features python
 pip install target/wheels/simple_smtp_sender-*.whl
 ```
 

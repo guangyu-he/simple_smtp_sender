@@ -49,7 +49,7 @@ impl EmailClient {
     /// Sets the recipient(s) of the email
     /// # Arguments
     /// * `recipient` - A vector of recipient email addresses
-    pub fn recipient(mut self, recipient: Vec<impl Into<String>>) -> Self {
+    pub fn recipient<R: Into<String>, I: IntoIterator<Item = R>>(mut self, recipient: I) -> Self {
         self.recipient = recipient.into_iter().map(|r| r.into()).collect();
         self
     }
@@ -73,16 +73,16 @@ impl EmailClient {
     /// Sets the CC recipients of the email
     /// # Arguments
     /// * `cc` - A vector of CC email addresses
-    pub fn cc(mut self, cc: Vec<String>) -> Self {
-        self.cc = Some(cc);
+    pub fn cc<R: Into<String>, I: IntoIterator<Item = R>>(mut self, cc: I) -> Self {
+        self.cc = Some(cc.into_iter().map(|r| r.into()).collect());
         self
     }
 
     /// Sets the BCC recipients of the email
     /// # Arguments
     /// * `bcc` - A vector of BCC email addresses
-    pub fn bcc(mut self, bcc: Vec<String>) -> Self {
-        self.bcc = Some(bcc);
+    pub fn bcc<R: Into<String>, I: IntoIterator<Item = R>>(mut self, bcc: I) -> Self {
+        self.bcc = Some(bcc.into_iter().map(|r| r.into()).collect());
         self
     }
 

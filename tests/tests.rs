@@ -1,5 +1,6 @@
 mod tests {
     use simple_smtp_sender::EmailConfig;
+    use std::path::PathBuf;
 
     #[test]
     fn email_config_test() {
@@ -102,7 +103,15 @@ mod tests {
         let recipient = vec!["test@example.com".to_string()];
         let subject = "Test Email".to_string();
         let body = "Hello from Rust!".to_string();
-        let result = send_email_sync(config, recipient, subject, body, None, None, None);
+        let result = send_email_sync(
+            config,
+            recipient,
+            subject,
+            body,
+            None,
+            None,
+            None::<PathBuf>,
+        );
         assert!(result.is_err());
     }
 
@@ -114,7 +123,16 @@ mod tests {
         let recipient = vec!["test@example.com".to_string()];
         let subject = "Test Email Async".to_string();
         let body = "Hello from Rust!".to_string();
-        let result = send_email_async(config, recipient, subject, body, None, None, None).await;
+        let result = send_email_async(
+            config,
+            recipient,
+            subject,
+            body,
+            None,
+            None,
+            None::<PathBuf>,
+        )
+        .await;
         assert!(result.is_err());
     }
 
@@ -124,7 +142,7 @@ mod tests {
         let config = EmailConfig::from_env();
 
         EmailClient::new(config)
-            .recipient(vec!["test@example.com".to_string()])
+            .recipient(vec!["test@example.com"])
             .subject("Test Email Builder")
             .body("Hello from Rust Email Builder!")
             .send()
@@ -132,14 +150,15 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn send_email_with_builder_async_rest() {
+    async fn send_email_with_builder_async_with_attachment_rest() {
         use simple_smtp_sender::EmailClient;
         let config = EmailConfig::from_env();
 
         EmailClient::new(config)
-            .recipient(vec!["test@example.com".to_string()])
+            .recipient(vec!["test@example.com"])
             .subject("Test Email Builder")
             .body("Hello from Rust Email Builder!")
+            .attachment("README.md")
             .send_async()
             .await
             .expect("Failed to send email using builder");

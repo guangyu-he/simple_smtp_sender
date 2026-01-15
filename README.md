@@ -42,7 +42,7 @@ rust pacakge, please declare the dependency with `default-feature=false`:
 ```toml
 [dependencies]
 # Rust-only version (no Python dependencies)
-simple_smtp_sender = { version = "0.3.0" }
+simple_smtp_sender = { version = "0.3.1" }
 ```
 
 ### Build Python package from Source (requires Rust toolchain and maturin)

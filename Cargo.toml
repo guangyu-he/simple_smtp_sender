@@ -14,20 +14,16 @@ exclude = [".github/workflows/CI.yml", "simple_smtp_sender.pyi", ".gitignore", "
 name = "simple_smtp_sender"
 crate-type = ["cdylib", "rlib"]
 
-# vendored OpenSSL for Linux to avoid dependency issues
-[target.'cfg(target_os = "linux")'.dependencies]
-openssl = { version = "0.10.75", features = ["vendored"] }
-
 [dependencies]
-pyo3 = { features = ["extension-module", "abi3-py310", "generate-import-lib"], version = "0.27.2", optional = true }
-lettre = { version = "0.11", features = ["builder", "smtp-transport", "tokio1", "tokio1-native-tls"] }
+pyo3 = { features = ["extension-module", "abi3-py310", "generate-import-lib"], version = "0.28", optional = true }
+lettre = { version = "0.11", default-features = false, features = ["builder", "smtp-transport", "tokio1", "tokio1-rustls-tls"] }
 mime_guess = "2.0"
 anyhow = "1.0"
-pyo3-async-runtimes = { version = "0.27.0", features = ["attributes", "tokio-runtime"], optional = true }
+pyo3-async-runtimes = { version = "0.28", features = ["attributes", "tokio-runtime"], optional = true }
 serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]
-tokio = { version = "1.48", features = ["test-util", "rt", "macros"] }
+tokio = { version = "1.49", features = ["test-util", "rt", "macros"] }
 
 [features]
 default = ["rslib"]

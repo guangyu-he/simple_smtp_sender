@@ -6,7 +6,10 @@ use std::fmt;
 use pyo3::{Bound, PyResult, pyclass, pymethods, types::PyType};
 
 #[derive(Clone)]
-#[cfg_attr(feature = "python", pyclass(dict, get_all, set_all, str, eq, subclass))]
+#[cfg_attr(
+    feature = "python",
+    pyclass(dict, get_all, set_all, str, eq, subclass, from_py_object)
+)]
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 /// Configuration for email server connection
 pub struct EmailConfig {

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::fmt;
 
 #[cfg(feature = "python")]
-use pyo3::{Bound, PyResult, pyclass, pymethods, types::PyType};
+use pyo3::pyclass;
 
 #[derive(Clone)]
 #[cfg_attr(
@@ -73,44 +73,5 @@ impl From<HashMap<String, String>> for EmailConfig {
             username: map.get("username").cloned().unwrap_or_default(),
             password: map.get("password").cloned().unwrap_or_default(),
         }
-    }
-}
-
-#[cfg(feature = "python")]
-#[pymethods]
-impl EmailConfig {
-    #[new]
-    #[pyo3(signature = (server, sender_email, username, password))]
-    /// Creates a new EmailConfig instance
-    /// # Arguments
-    /// * `server` - SMTP server address
-    /// * `sender_email` - Sender email address
-    /// * `username` - Username for SMTP authentication
-    /// * `password` - Password for SMTP authentication
-    pub fn py_new(
-        server: &str,
-        sender_email: &str,
-        username: &str,
-        password: &str,
-    ) -> PyResult<Self> {
-        Ok(Self::new(server, sender_email, username, password))
-    }
-
-    #[classmethod]
-    /// Loads EmailConfig from environment variables
-    /// # Returns
-    /// An EmailConfig instance populated from environment variables
-    pub fn load_from_env(_cls: &Bound<'_, PyType>) -> PyResult<Self> {
-        Ok(Self::from_env())
-    }
-
-    #[classmethod]
-    /// Loads EmailConfig from a dictionary
-    /// # Arguments
-    /// * `map` - A dictionary containing configuration parameters
-    /// # Returns
-    /// An EmailConfig instance populated from the dictionary
-    pub fn load_from_map(_cls: &Bound<'_, PyType>, map: HashMap<String, String>) -> PyResult<Self> {
-        Ok(Self::from(map))
     }
 }

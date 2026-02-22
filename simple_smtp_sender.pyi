@@ -1,5 +1,8 @@
 from typing import List, Self, Dict
 
+from pydantic import BaseModel
+
+
 class EmailConfig:
     """
     Configuration for sending emails.
@@ -41,6 +44,17 @@ class EmailConfig:
             config_map: Dictionary containing configuration parameters
         """
         ...
+
+    @classmethod
+    def load_from_pydantic(cls, pydantic_obj: "BaseModel") -> Self | None:
+        """
+        Load EmailConfig from a Pydantic BaseModel.
+
+        Args:
+            pydantic_obj: Pydantic BaseModel containing configuration parameters
+        """
+        ...
+
 
 def send_email(
     config: EmailConfig,

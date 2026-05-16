@@ -1,6 +1,7 @@
 mod email;
 mod email_client;
 mod email_config;
+#[cfg(feature = "python")]
 mod email_config_py;
 
 pub use email::async_send_email as send_email_async;

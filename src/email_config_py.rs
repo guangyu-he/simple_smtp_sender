@@ -1,17 +1,10 @@
-#[cfg(feature = "python")]
 use crate::EmailConfig;
-#[cfg(feature = "python")]
 use pyo3::prelude::*;
-#[cfg(feature = "python")]
 use pyo3::types::PyType;
-#[cfg(feature = "python")]
 use pyo3::{pymethods, Bound, PyResult, Python};
-#[cfg(feature = "python")]
 use serde_pyobject::{from_pyobject, to_pyobject};
-#[cfg(feature = "python")]
 use std::collections::HashMap;
 
-#[cfg(feature = "python")]
 #[pymethods]
 impl EmailConfig {
     #[new]

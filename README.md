@@ -72,7 +72,7 @@ pip install target/wheels/simple_smtp_sender-*.whl
 
 ### Rust
 
-check tests.rs in `tests/` for more examples.
+check examples.rs in `examples/` for more examples.
 
 ### Python
 

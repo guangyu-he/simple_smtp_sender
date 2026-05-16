@@ -39,7 +39,7 @@ pip install simple_smtp_sender
 ```toml
 [dependencies]
 # Rust-only version (no Python dependencies)
-simple_smtp_sender = { version = "0.3.1" }
+simple_smtp_sender = { version = "0.4.0" }
 ```
 
 ### Build Python package from Source (requires Rust toolchain and maturin)

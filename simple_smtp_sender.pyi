@@ -2,7 +2,6 @@ from typing import List, Self, Dict
 
 from pydantic import BaseModel
 
-
 class EmailConfig:
     """
     Configuration for sending emails.
@@ -55,6 +54,14 @@ class EmailConfig:
         """
         ...
 
+    def to_dict(self) -> Dict[str, str]:
+        """
+        Convert EmailConfig to a Python dictionary.
+
+        Returns:
+            Dictionary containing the configuration parameters
+        """
+        ...
 
 def send_email(
     config: EmailConfig,

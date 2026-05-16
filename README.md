@@ -39,7 +39,7 @@ pip install simple_smtp_sender
 ```toml
 [dependencies]
 # Rust-only version (no Python dependencies)
-simple_smtp_sender = { version = "0.4.0" }
+simple_smtp_sender = { version = "0.4.1" }
 ```
 
 ### Build Python package from Source (requires Rust toolchain and maturin)
@@ -145,6 +145,12 @@ APIs:
     - `EMAIL_USERNAME`
     - `EMAIL_PASSWORD`
 - `load_from_map(config_map: dict)`: Load configuration from a dictionary.
+- `load_from_pydantic(pydantic_obj: BaseModel)`: Load configuration from a Pydantic
+  `BaseModel`. Requires `pydantic` to be installed in the active Python environment.
+  Raises `RuntimeError` if `pydantic` cannot be imported, `TypeError` if the argument
+  is not a `BaseModel` instance, and `ValueError` if the model's fields cannot be
+  deserialized into an `EmailConfig`.
+- `to_dict()`: Convert the `EmailConfig` instance into a Python `dict[str, str]`.
 
 ### Sends an email synchronously (blocking) using the provided configuration.
 

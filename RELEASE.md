@@ -1,5 +1,36 @@
 # Release Notes
 
+## v0.4.1
+
+### Breaking Changes (Python API)
+
+- **`EmailConfig.load_from_pydantic()` signature change**: Return type changed
+  from `Self | None` to `Self`. Errors are now surfaced as proper exceptions
+  instead of being silently swallowed into `None`:
+    - `RuntimeError` if `pydantic` cannot be imported from the active Python
+      environment (the underlying import error is included in the message).
+    - `TypeError` if the argument is not a `pydantic.BaseModel` instance (the
+      actual type name is included in the message).
+    - `ValueError` if the model's fields cannot be deserialized into an
+      `EmailConfig` (e.g. missing or mistyped fields).
+
+### Features (Python API)
+
+- Added `EmailConfig.to_dict() -> dict[str, str]` for converting an
+  `EmailConfig` instance into a Python dictionary.
+
+### Internal / Build
+
+- Gated the entire `email_config_py` module behind `#[cfg(feature = "python")]`
+  at the `lib.rs` level, removing the repetitive per-item `cfg` attributes
+  inside the module.
+- Moved Rust test cases from `tests/` to `examples/examples.rs` for better
+  organization, and removed the obsolete `[[test]]` entry from `Cargo.toml`.
+
+### Dependencies
+
+- Bumped `pyo3` to `0.28.3` (patch update).
+
 ## v0.4.0
 
 ### Breaking Changes

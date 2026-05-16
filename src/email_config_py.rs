@@ -1,7 +1,7 @@
 use crate::EmailConfig;
 use pyo3::prelude::*;
 use pyo3::types::PyType;
-use pyo3::{pymethods, Bound, PyResult, Python};
+use pyo3::{Bound, PyResult, Python, pymethods};
 use serde_pyobject::{from_pyobject, to_pyobject};
 use std::collections::HashMap;
 
@@ -102,11 +102,11 @@ impl EmailConfig {
 
     /// Converts EmailConfig to a Python dictionary
     fn to_dict<'p>(&self, py: Python<'p>) -> PyResult<Bound<'p, PyAny>> {
-        Ok(to_pyobject(py, self).map_err(|e| {
+        to_pyobject(py, self).map_err(|e| {
             pyo3::exceptions::PyRuntimeError::new_err(format!(
                 "Failed to convert object to dict: {}",
                 e
             ))
-        })?)
+        })
     }
 }

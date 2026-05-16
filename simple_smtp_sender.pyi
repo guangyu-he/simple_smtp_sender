@@ -45,12 +45,29 @@ class EmailConfig:
         ...
 
     @classmethod
-    def load_from_pydantic(cls, pydantic_obj: "BaseModel") -> Self | None:
+    def load_from_pydantic(cls, pydantic_obj: "BaseModel") -> Self:
         """
         Load EmailConfig from a Pydantic BaseModel.
 
+        Requirements:
+            `pydantic` must be installed in the active Python environment and
+            this code must be executed inside that environment (e.g. the
+            project's virtualenv). If `pydantic` cannot be imported, a
+            ``RuntimeError`` is raised with the underlying import error.
+
         Args:
             pydantic_obj: Pydantic BaseModel containing configuration parameters
+
+        Returns:
+            EmailConfig instance populated from the Pydantic BaseModel.
+
+        Raises:
+            RuntimeError: If ``pydantic`` cannot be imported from the current
+                Python environment.
+            TypeError: If ``pydantic_obj`` is not an instance of
+                ``pydantic.BaseModel``.
+            ValueError: If the model's fields cannot be deserialized into an
+                ``EmailConfig`` (e.g. missing or mistyped fields).
         """
         ...
 
